@@ -3,6 +3,12 @@ import mediapipe as mp
 import numpy as np
 import PoseModule as pm
 
+
+# Initialize YOLOv4
+net = cv2.dnn.readNet("yolodemo/yolov4-custom_last.weights", "yolodemo/yolov4-custom.cfg")
+layer_names = net.getLayerNames()
+output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+
 detector = pm.PoseDetector()
 
 
