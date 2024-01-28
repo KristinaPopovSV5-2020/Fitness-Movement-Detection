@@ -1,7 +1,7 @@
 import cv2
 import os
 
-number_of_picture = 142
+number_of_picture = 73
 def process_video(video_path, output_folder):
     global number_of_picture
     frame_num = 0
@@ -24,7 +24,7 @@ def process_video(video_path, output_folder):
         # Ako je trenutni frejm svaki deseti frejm
         if frame_num % 10 == 0:
             # Generisanje naziva datoteke za čuvanje skrinšota
-            filename = f"{output_folder}/crunch_{str(number_of_picture)}.png"
+            filename = f"{output_folder}/pullup_{str(number_of_picture)}.png"
 
             # Čuvanje skrinšota
             cv2.imwrite(filename, frame)
@@ -33,9 +33,9 @@ def process_video(video_path, output_folder):
     cap.release()
 
 if __name__ == '__main__':
-    path = "data/"
-    for i in range(14, 16):
-        video_path = path + "crunch_" + str(i) + ".mp4"
-        output_path = "yolodemo/Images/Crunch"
+    path = "C:\\Users\\kikap\\OneDrive\\Pictures\\videos\\pullup\\"
+    for i in range(1, 9):
+        video_path = path + "pullup_n_" + str(i) + ".mp4"
+        output_path = "yolodemo/Images/Pullup"
         process_video(video_path, output_path)
     print(number_of_picture)
