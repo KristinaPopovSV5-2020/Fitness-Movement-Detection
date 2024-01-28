@@ -1,16 +1,16 @@
 import cv2
 import numpy as np
 import MP.PoseModule as pm
+from MP.calculate_noi import noi_pushup
 import mediapipe as mp
 
 net = cv2.dnn.readNet("yolov4-custom_last.weights", "yolodemo/yolov4-custom.cfg")
 layer_names = net.getLayerNames()
 output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
-mp_pose = mp.solutions.pose
-pose = mp_pose.Pose()
+detector = pm.PoseDetector()
 
-cap = cv2.VideoCapture("C:\\Users\\zoric\\Downloads\\starjumps\\sj7.mp4")
+cap = cv2.VideoCapture("C:\\Users\\kikap\\Downloads\\push-Up.mp4")
 
 boxes = []
 confidences = []
@@ -63,17 +63,15 @@ while cap.isOpened():
             roi = frame[y:y + h, x:x + w]
 
             # Mediapipe Pose estimation on the ROI
-            image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            results = pose.process(image_rgb)
+            #image_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+            img = detector.findPose(frame, False)
+            lmList = detector.findPosition(img, False)
+            # print(lmList)
+            if len(lmList) != 0:
+                noi_pushup(detector,img)
 
-            if results.pose_landmarks:
-                for landmark in results.pose_landmarks.landmark:
-                    height, width, _ = frame.shape
-                    cx, cy = int(landmark.x * width), int(landmark.y * height)
-                    cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
+                # Check to ensure right form before starting the program
 
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(frame, f'Class: {class_ids[i]}', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Display the resulting frame
     cv2.imshow('Exercise Assessment', frame)
