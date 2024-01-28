@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import pickle
 
-
+last_class = None
 def yolo_detect():
     global boxes,confidences,class_ids
 
@@ -69,8 +69,8 @@ if __name__ == '__main__':
 
     detector = pm.PoseDetector()
 
-    folder_path="C:\\Users\\zoric\\Downloads\\pull Up\\"
-    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') and f.startswith("pull")]
+    folder_path="C:\\Users\\kikap\\OneDrive\\Pictures\\videos\\"
+    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') and f.startswith("pullup_n_4")]
 
     svm_x = []
     svm_y = []
@@ -116,23 +116,25 @@ if __name__ == '__main__':
             if num_frames%50==0:
                 num += 1
                 indices=yolo_detect()
+                print(indices)
+                if len(indices)>0:
+                    last_class = class_ids[indices[0]]
                 if num>2:
                     #svm_data()
+                    print("Completition: ", (len(completion)))
                     if len(completion)==100:
 
                         prediction=svm_classifier.predict([completion])
                         print("Prediction ",prediction)
                         if prediction==0:
-                            print("Uradio "+str(class_ids[indices[0]])+" ")
+                            print("Uradio "+str(last_class)+" ")
                     completion = completion[50:]
 
-            if len(indices)>0:
-                x, y, w, h = boxes[indices[0]]
-                roi = frame[y:y + h, x:x + w]
+            if last_class:
                 frame = detector.findPose(frame, False)
                 lmList = detector.findPosition(frame, False)
                 if len(lmList) != 0:
-                    completion.append(noi(class_ids[indices[0]],detector,frame))
+                    completion.append(noi(last_class,detector,frame))
 
             cv2.imshow('Exercise Assessment', frame)
 
