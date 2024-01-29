@@ -7,8 +7,9 @@ import os
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import pickle
+import time
 
-last_class = None
+last_class = 1
 def yolo_detect():
     global boxes,confidences,class_ids
 
@@ -69,8 +70,8 @@ if __name__ == '__main__':
 
     detector = pm.PoseDetector()
 
-    folder_path="C:\\Users\\kikap\\OneDrive\\Pictures\\videos\\"
-    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') and f.startswith("pullup_n_4")]
+    folder_path="C:\\Users\\zoric\\Downloads\\pull Up\\"
+    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') and f.startswith("pull")]
 
     svm_x = []
     svm_y = []
@@ -101,7 +102,6 @@ if __name__ == '__main__':
         num_frames=0
 
         completion=[]
-
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
@@ -111,17 +111,15 @@ if __name__ == '__main__':
 
             height, width, channels = frame.shape
 
-            num_frames+=1
-
             if num_frames%50==0:
                 num += 1
                 indices=yolo_detect()
-                print(indices)
                 if len(indices)>0:
                     last_class = class_ids[indices[0]]
+                print("Completition: ", (len(completion)))
+
                 if num>2:
                     #svm_data()
-                    print("Completition: ", (len(completion)))
                     if len(completion)==100:
 
                         prediction=svm_classifier.predict([completion])
@@ -130,11 +128,12 @@ if __name__ == '__main__':
                             print("Uradio "+str(last_class)+" ")
                     completion = completion[50:]
 
-            if last_class:
-                frame = detector.findPose(frame, False)
-                lmList = detector.findPosition(frame, False)
-                if len(lmList) != 0:
-                    completion.append(noi(last_class,detector,frame))
+            num_frames+=1
+
+            frame = detector.findPose(frame, False)
+            lmList = detector.findPosition(frame, False)
+            if len(lmList) != 0:
+                completion.append(noi(last_class,detector,frame))
 
             cv2.imshow('Exercise Assessment', frame)
 
