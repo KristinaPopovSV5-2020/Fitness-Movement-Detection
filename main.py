@@ -8,9 +8,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 import pickle
 import time
+from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score
+
 
 last_class = 1
-def yolo_detect():
+"""def yolo_detect():
     global boxes,confidences,class_ids
 
     boxes = []
@@ -60,7 +62,7 @@ def svm_data():
 
     #plt.plot(list(range(len(completion))), completion)
     #plt.show()
-
+"""
 
 if __name__ == '__main__':
 
@@ -71,11 +73,11 @@ if __name__ == '__main__':
     detector = pm.PoseDetector()
 
     folder_path="C:\\Users\\zoric\\Downloads\\pull Up\\"
-    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') and f.startswith("pull")]
+    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') or f.endswith(".MOV")]
 
     svm_x = []
     svm_y = []
-    """with open('svm_x.txt', 'r') as file:
+    with open('svm_x.txt', 'r') as file:
         for line in file:
             # Use eval to convert the string representation of a list to an actual list
             sublist = eval(line.strip())
@@ -84,12 +86,12 @@ if __name__ == '__main__':
         for line in file:
             # Use eval to convert the string representation of a list to an actual list
             sublist = eval(line.strip())
-            svm_y.append(sublist)"""
+            svm_y.append(sublist)
 
     with open('svm_classifier.pkl', 'rb') as file:
-        svm_classifier = pickle.load(file)
+        classifier = pickle.load(file)
 
-    for video_file in video_files:
+    """for video_file in video_files:
         print(video_file)
         cap = cv2.VideoCapture(os.path.join(folder_path, video_file))
 
@@ -100,6 +102,7 @@ if __name__ == '__main__':
         num=0
         indices = []
         num_frames=0
+        num_exercise=0
 
         completion=[]
         while cap.isOpened():
@@ -116,16 +119,14 @@ if __name__ == '__main__':
                 indices=yolo_detect()
                 if len(indices)>0:
                     last_class = class_ids[indices[0]]
-                print("Completition: ", (len(completion)))
 
                 if num>2:
-                    #svm_data()
+                    svm_data()
                     if len(completion)==100:
 
                         prediction=svm_classifier.predict([completion])
-                        print("Prediction ",prediction)
                         if prediction==0:
-                            print("Uradio "+str(last_class)+" ")
+                            num_exercise+=
                     completion = completion[50:]
 
             num_frames+=1
@@ -135,7 +136,7 @@ if __name__ == '__main__':
             if len(lmList) != 0:
                 completion.append(noi(last_class,detector,frame))
 
-            cv2.imshow('Exercise Assessment', frame)
+            #cv2.imshow('Exercise Assessment', frame)
 
             # Break the loop if 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -144,8 +145,9 @@ if __name__ == '__main__':
         # Release video capture object and close all windows
         cap.release()
         cv2.destroyAllWindows()
+        #print("Video "+video_file+": "+str(num_exercise))"""
 
-    """x=[]
+    x=[]
     y=[]
     for i in range(len(svm_x)):
         if len(svm_x[i])==100:
@@ -154,7 +156,27 @@ if __name__ == '__main__':
     svm_x = np.array(x, 'float32')
     svm_y = np.array(y, 'int')
     x_train, x_test, y_train, y_test = train_test_split(svm_x, svm_y, test_size=0.2, random_state=42)
-    classifier = SVC(kernel='rbf', C=1.0, probability=True)
-    classifier = classifier.fit(x_train, y_train)
-    with open('svm_classifier.pkl', 'wb') as file:
-        pickle.dump(classifier, file)"""
+    #classifier = SVC(kernel='rbf', C=1.0, probability=True)
+    #classifier.fit(x_train, y_train)
+    predictions = classifier.predict(x_test)
+    accuracy = accuracy_score(y_test, predictions)
+    precision = precision_score(y_test, predictions)
+    recall = recall_score(y_test, predictions)
+    f1 = f1_score(y_test, predictions)
+    print(f"Accuracy: {accuracy}")
+    print(f"Precision: {precision}")
+    print(f"Recall: {recall}")
+    print(f"F1: {f1}")
+    #with open('svm_classifier1.pkl', 'wb') as file:
+     #   pickle.dump(classifier, file)
+
+    """file_path = "svm_x1.txt"
+    with open(file_path, 'w') as file:
+        for inner_list in svm_x:
+            line = ','.join(map(str, inner_list)) + '\n'
+            file.write(line)
+    file_path = "svm_y1.txt"
+    with open(file_path, 'w') as file:
+        for inner_list in svm_y:
+            line = ','.join(map(str, inner_list)) + '\n'
+            file.write(line)"""
