@@ -98,7 +98,7 @@ def create_ann(output_size):
 def train_ann(ann, svm_x, svm_y, epochs):
     x_train, x_test, y_train, y_test = train_test_split(svm_x, svm_y, test_size=0.2, random_state=42)
     print("\nTraining started...")
-    sgd = SGD(learning_rate=0.01, momentum=0.9)
+    sgd = SGD(learning_rate=0.01, momentum=0.7)
     ann.compile(loss='binary_crossentropy', optimizer=sgd,metrics=['accuracy'])
     ann.fit(x_train, y_train, epochs=epochs, batch_size=1, verbose=0, shuffle=True)
     print("\nTraining completed...")
@@ -153,8 +153,8 @@ if __name__ == '__main__':
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
-    folder_path = "C:\\Users\\kikap\\OneDrive\\Pictures\\videos\\pullup\\"
-    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') or f.endswith(".MOV")]
+    folder_path = "C:\\Users\\zoric\\Downloads\\pull Up\\"
+    video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4')]
 
     if classifier_SVM:
         with open('svm_classifier.pkl', 'rb') as file:
@@ -168,7 +168,6 @@ if __name__ == '__main__':
     y_data = []
 
     for video_file in video_files:
-        print(video_file)
         cap = cv2.VideoCapture(os.path.join(folder_path, video_file))
 
         boxes = []
@@ -191,11 +190,10 @@ if __name__ == '__main__':
             height, width, channels = frame.shape
 
             if num_frames % 50 == 0:
-
                 num += 1
                 indices = yolo_detect()
-                x, y, w, h = boxes[indices[0]]
-                roi = frame[y:y + h, x:x + w]
+                #x, y, w, h = boxes[indices[0]]
+                #roi = frame[y:y + h, x:x + w]
                 if len(indices) > 0:
                     last_class = class_ids[indices[0]]
 
@@ -203,8 +201,12 @@ if __name__ == '__main__':
                     #load_dataset()
                     if len(completion) == 100:
                         prediction = classifier.predict([completion])
-                        if prediction == 0:
-                            num_exercise += 1
+                        if classifier_SVM:
+                            if prediction==0:
+                                num_exercise += 1
+                        else:
+                            if prediction > 0.65:
+                                num_exercise += 1
                     completion = completion[50:]
 
             num_frames += 1
@@ -216,11 +218,9 @@ if __name__ == '__main__':
 
             cv2.imshow('Exercise Assessment', frame)
 
-            # Break the loop if 'q' key is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-        # Release video capture object and close all windows
         cap.release()
         cv2.destroyAllWindows()
         print("Video " + video_file + ": " + str(num_exercise))
