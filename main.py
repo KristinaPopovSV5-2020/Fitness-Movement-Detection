@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
+
 import MP.PoseModule as pm
 import os
 from sklearn.model_selection import train_test_split
@@ -12,12 +14,14 @@ from tensorflow.keras.optimizers import SGD
 import time
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
+from MP.calculate_noi import noi
+
 last_class = None
 detector = pm.PoseDetector()
 classifier_SVM = False
 
 
-'''def yolo_detect():
+def yolo_detect():
     global boxes, confidences, class_ids
 
     boxes = []
@@ -36,13 +40,13 @@ classifier_SVM = False
             if confidence > 0.5:
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
-                width = int(detection[2] * width)
-                height = int(detection[3] * height)
+                new_width = int(detection[2] * width)
+                new_height = int(detection[3] * height)
 
-                x = int(center_x - width / 2)
-                y = int(center_y - height / 2)
+                new_x = int(center_x - new_width / 2)
+                new_y = int(center_y - new_height / 2)
 
-                boxes.append([x, y, width, height])
+                boxes.append([new_x, new_y, width, height])
                 confidences.append(float(confidence))
                 class_ids.append(class_id)
 
@@ -66,7 +70,7 @@ def load_dataset():
     y_data.append(y)
 
     plt.plot(list(range(len(completion))), completion)
-    plt.show()'''
+    plt.show()
 
 
 def svm(svm_x, svm_y):
@@ -152,18 +156,18 @@ if __name__ == '__main__':
     folder_path = "C:\\Users\\kikap\\OneDrive\\Pictures\\videos\\pullup\\"
     video_files = [f for f in os.listdir(folder_path) if f.endswith('.mp4') or f.endswith(".MOV")]
 
-    '''if classifier_SVM:
+    if classifier_SVM:
         with open('svm_classifier.pkl', 'rb') as file:
             classifier = pickle.load(file)
     else:
         with open('tensorFlow_classifier.pkl', 'rb') as file:
-            classifier = pickle.load(file)'''
+            classifier = pickle.load(file)
 
-    train_data()
+    #train_data()
     x_data = []
     y_data = []
 
-    '''for video_file in video_files:
+    for video_file in video_files:
         print(video_file)
         cap = cv2.VideoCapture(os.path.join(folder_path, video_file))
 
@@ -196,7 +200,7 @@ if __name__ == '__main__':
                     last_class = class_ids[indices[0]]
 
                 if num > 2:
-                    load_dataset()
+                    #load_dataset()
                     if len(completion) == 100:
                         prediction = classifier.predict([completion])
                         if prediction == 0:
@@ -219,4 +223,4 @@ if __name__ == '__main__':
         # Release video capture object and close all windows
         cap.release()
         cv2.destroyAllWindows()
-        print("Video " + video_file + ": " + str(num_exercise))'''
+        print("Video " + video_file + ": " + str(num_exercise))
