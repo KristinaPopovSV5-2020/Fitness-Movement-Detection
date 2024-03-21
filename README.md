@@ -1,5 +1,4 @@
 ## Fitness-Movement-Detection
-
 ### Introduction
 
 In this project we used Yolov4 model and Mediapipe to be able to detect when the user executes an exercise correctly. Yolov4 was used for exercise type detection(crunch, push up, pull up, squat) which helped us to extract important nodes (using Mediapipe) for each exercise, which form an angle that changes during the exercise and then analyze how the angle changed in time to be able to see if the exercise was done correctly. The change of the angle in time forms a signal that represents the movement, which we used to train SVM and TensorFlow classifiers to be able to separate right and wrong movement signals. Signals of right movement were labeled with 0 which represent Completeness and signals of wrong movements were labeled with 1 which represents No-completeness. These classifiers were later used to classify each 100 frames of a video and detect if certain 100 frames contain the right movement signal.
@@ -59,7 +58,9 @@ Before running the project, to be able to run the program run these commands:
 2. **To run the project execute:**
     ```bash
     python main.py
-
+## Presentation
+[Fitness Movement Detection](https://github.com/KristinaPopovSV5-2020/Fitness-Movement-Detection/blob/main/FitnessMovementDetection.pptx)
 ## Poster
 ![Fitness Movement Detection](https://github.com/KristinaPopovSV5-2020/Fitness-Movement-Detection/blob/dataset/poster.png)
 ![Fitness Movement Detection](https://github.com/KristinaPopovSV5-2020/Fitness-Movement-Detection/blob/dataset/yolodemo/yolo_classes.jpg)
+
